@@ -302,6 +302,20 @@ canvas{width:100%!important;}
 }
 .install-banner strong{color:var(--or);}
 .install-banner .close-btn{margin-left:auto;color:var(--muted);font-size:1.1rem;cursor:pointer;padding:4px;}
+
+/* DARK MODE */
+body.dark-mode {
+  --bg:#0f1117; --surf:#18191e; --card:#1f2128; --card2:#252830;
+  --or:#4f46e5; --or-d:rgba(79,70,229,0.15); --or-b:rgba(79,70,229,0.3);
+  --teal:#0891b2; --teal-d:rgba(8,145,178,0.12);
+  --yel:#d97706; --yel-d:rgba(217,119,6,0.12);
+  --red:#dc2626; --red-d:rgba(220,38,38,0.12);
+  --txt:#e2eaff; --muted:#64748b; --border:rgba(255,255,255,0.08);
+}
+body.dark-mode .bnav { background:rgba(15,17,23,0.97); }
+body.dark-mode .hdr { background:rgba(15,17,23,0.95); }
+body.dark-mode .card { box-shadow:none; }
+body.dark-mode .card-sm { box-shadow:none; }
 </style>
 </head>
 <body>
@@ -313,7 +327,7 @@ canvas{width:100%!important;}
       <div class="hdr-title" id="hdrTitle">FitPlan</div>
       <div class="hdr-date" id="hdrDate"></div>
     </div>
-    <div id="hdrRight"></div>
+    <div id="hdrRight"><button onclick="toggleTheme()" style="background:var(--or-d);border:1px solid var(--or-b);border-radius:8px;padding:6px 10px;font-size:1rem;cursor:pointer;color:var(--or)" id="themeBtn">🌙</button></div>
   </div>
 
   <!-- CONTENT -->
@@ -358,6 +372,12 @@ canvas{width:100%!important;}
       <div class="card" id="todaySuppCard">
         <div class="card-title"><div class="ico">💊</div> Supplements heute</div>
         <div id="todaySuppQuick"></div>
+      </div>
+
+      <!-- Water quick tracker -->
+      <div class="card">
+        <div class="card-title"><div class="ico t">💧</div> Wasser heute</div>
+        <div id="waterQuick"></div>
       </div>
 
       <!-- Quick weight log -->
@@ -405,11 +425,15 @@ canvas{width:100%!important;}
       <div class="sec-title">FORTSCHRITT</div>
       <div class="sec-sub">Gewicht · Gym-Gewichte · Streak</div>
 
-      <div class="track-tabs" style="grid-template-columns:repeat(4,1fr);display:grid;gap:5px;">
+      <div class="track-tabs" style="grid-template-columns:repeat(3,1fr);display:grid;gap:5px;margin-bottom:6px">
         <div class="track-tab active" onclick="switchTrackTab('weight',this)">⚖️ Gewicht</div>
         <div class="track-tab" onclick="switchTrackTab('gym',this)">🏋️ Gym</div>
         <div class="track-tab" onclick="switchTrackTab('streak',this)">🔥 Streak</div>
+      </div>
+      <div class="track-tabs" style="grid-template-columns:repeat(3,1fr);display:grid;gap:5px;">
         <div class="track-tab" onclick="switchTrackTab('supp',this)">💊 Supps</div>
+        <div class="track-tab" onclick="switchTrackTab('water',this)">💧 Wasser</div>
+        <div class="track-tab" onclick="switchTrackTab('kcal',this)">🔥 Kalorien</div>
       </div>
 
       <!-- WEIGHT TAB -->
@@ -448,24 +472,48 @@ canvas{width:100%!important;}
       <div id="trackSupp" style="display:none">
         <div id="suppContent"></div>
       </div>
+      <!-- WATER TAB -->
+      <div id="trackWater" style="display:none">
+        <div id="waterContent"></div>
+      </div>
+      <!-- KCAL TAB -->
+      <div id="trackKcal" style="display:none">
+        <div id="kcalContent"></div>
+      </div>
     </div>
 
-    <!-- WOCHE -->
+    <!-- KÖRPERMASSE -->
+    <div class="page" id="page-body">
+      <div class="sec-title">KÖRPERMASSE</div>
+      <div class="sec-sub">Umfänge tracken · Der ehrliche Fortschritt</div>
+      <div id="bodyContent"></div>
+    </div>
+
+    <!-- WOCHE / MEHR -->
     <div class="page" id="page-week">
-      <div class="sec-title">WOCHENPLAN</div>
-      <div class="sec-sub">Dein kompletter Wochenüberblick</div>
-      <div id="weekContent"></div>
+      <div class="sec-title">MEHR</div>
+      <div class="sec-sub">Wochenplan · Einkauf · Meal Prep · Körpermaße</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+        <button class="btn btn-or" onclick="switchMoreTab('week',this)" id="moreTabWeek" style="font-size:0.82rem">📅 Woche</button>
+        <button class="btn btn-ghost" onclick="switchMoreTab('shop',this)" id="moreTabShop" style="font-size:0.82rem">🛒 Einkauf</button>
+        <button class="btn btn-ghost" onclick="switchMoreTab('prep',this)" id="moreTabPrep" style="font-size:0.82rem">🥡 Meal Prep</button>
+        <button class="btn btn-ghost" onclick="switchMoreTab('body',this)" id="moreTabBody" style="font-size:0.82rem">📏 Körpermaße</button>
+      </div>
+      <div id="moreWeek"><div id="weekContent"></div></div>
+      <div id="moreShop" style="display:none"><div id="shopContent"></div></div>
+      <div id="morePrep" style="display:none"><div id="prepContent"></div></div>
+      <div id="moreBody" style="display:none"><div id="bodyContent"></div></div>
     </div>
 
   </div><!-- /content -->
 
   <!-- BOTTOM NAV -->
-  <div class="bnav">
+  <div class="bnav" style="grid-template-columns:repeat(5,1fr)">
     <button class="bnav-btn active" onclick="showPage('today',this)"><div class="ico">🏠</div>Heute</button>
     <button class="bnav-btn" onclick="showPage('gym',this)"><div class="ico">💪</div>Gym</button>
     <button class="bnav-btn" onclick="showPage('meal',this)"><div class="ico">🥗</div>Essen</button>
     <button class="bnav-btn" onclick="showPage('track',this)"><div class="ico">📊</div>Tracking</button>
-    <button class="bnav-btn" onclick="showPage('week',this)"><div class="ico">📅</div>Woche</button>
+    <button class="bnav-btn" onclick="showPage('week',this)"><div class="ico">📅</div>Mehr</button>
   </div>
 </div>
 
@@ -775,8 +823,12 @@ let state = {
   weightLog: [],
   gymWeights: {},
   workoutLog: [],
-  weekPlan: {},   // {dayIndex_slotIndex: recipeId}
-  suppLog: {},    // {dateStr: {suppId: bool}}
+  weekPlan: {},
+  suppLog: {},
+  waterLog: {},
+  bodyLog: {},
+  shopChecked: {},
+  prepChecked: {},
 };
 
 function loadState() {
@@ -821,12 +873,12 @@ function showPage(name, btn) {
   document.getElementById('page-'+name).classList.add('active');
   if(btn) btn.classList.add('active');
   state.currentPage = name;
-  const titles = {today:'FitPlan',gym:'Gym-Plan',meal:'Mealplan',track:'Fortschritt',week:'Wochenplan'};
+  const titles = {today:'FitPlan',gym:'Gym-Plan',meal:'Mealplan',track:'Fortschritt',week:'Mehr'};
   document.getElementById('hdrTitle').textContent = titles[name] || 'FitPlan';
   if(name==='gym') renderGym();
   if(name==='meal') renderMeal();
   if(name==='track') renderTrack();
-  if(name==='week') renderWeek();
+  if(name==='week') { renderWeek(); }
 }
 
 // ==================== MEAL ====================
@@ -1558,172 +1610,559 @@ function markWorkoutDone() {
 }
 
 // ==================== SUPPLEMENTS ====================
+// ==================== DARK MODE ====================
+function toggleTheme() {
+  document.body.classList.toggle('dark-mode');
+  const dark = document.body.classList.contains('dark-mode');
+  document.getElementById('themeBtn').textContent = dark ? '☀️' : '🌙';
+  localStorage.setItem('fitplan_theme', dark ? 'dark' : 'light');
+}
+
+// ==================== MORE PAGE TABS ====================
+function switchMoreTab(tab, btn) {
+  ['week','shop','prep','body'].forEach(t => {
+    document.getElementById('more'+t.charAt(0).toUpperCase()+t.slice(1)).style.display = t===tab?'block':'none';
+    const b = document.getElementById('moreTab'+t.charAt(0).toUpperCase()+t.slice(1));
+    if(b) { b.className = t===tab ? 'btn btn-or' : 'btn btn-ghost'; b.style.fontSize='0.82rem'; }
+  });
+  if(tab==='week') renderWeek();
+  if(tab==='shop') renderShop();
+  if(tab==='prep') renderPrep();
+  if(tab==='body') renderBody();
+}
+
+// ==================== SUPPLEMENTS (multi-dose) ====================
 const SUPPLEMENTS = [
   {
-    id: 'kreatin',
-    name: 'Kreatin Monohydrat',
-    icon: '⚡',
-    color: 'var(--or)',
-    dose: '3–5g täglich',
-    timing: 'Egal wann – täglich zur gleichen Zeit',
-    benefit: 'Mehr Kraft & Muskelmasse, schnellere Erholung, günstiger Muskelerhalt beim Abnehmen',
-    evidence: 'Stärkstes ergogenes Supplement laut ISSN. Hunderte Studien.',
-    tip: 'Einfach ins Wasser rühren oder in den Shake – kein Geschmack',
+    id: 'kreatin', name: 'Kreatin Monohydrat', icon: '⚡', color: 'var(--or)',
+    doses: [
+      {id:'k_morgens', label:'Morgens', dose:'3–5g', time:'08:00'},
+    ],
+    benefit: 'Mehr Kraft & Muskelmasse, Muskelerhalt beim Abnehmen',
+    tip: 'Ins Wasser oder Shake rühren – kein Geschmack',
     cost: '~5€ / Monat',
   },
   {
-    id: 'whey',
-    name: 'Whey Protein',
-    icon: '🥛',
-    color: 'var(--teal)',
-    dose: '1 Shake (25–30g) nach Training',
-    timing: 'Nach Gym oder Fußball – innerhalb 60 Min.',
-    benefit: 'Erreicht Tagesziel ~160g Protein einfacher. Muskelaufbau & Sättigung.',
-    evidence: 'Nur nötig wenn Proteinziel über Essen nicht erreicht wird.',
-    tip: 'An trainingsfreien Tagen nicht nötig wenn du genug Fleisch/Quark isst',
+    id: 'whey', name: 'Whey Protein', icon: '🥛', color: 'var(--teal)',
+    doses: [
+      {id:'w_post', label:'Post-Workout', dose:'25–30g', time:'Nach Training'},
+      {id:'w_morgens', label:'Morgens (optional)', dose:'25g', time:'Frühstück'},
+    ],
+    benefit: 'Proteinziel ~160g/Tag leichter erreichen',
+    tip: 'An trainingsfreien Tagen nur wenn Proteinziel sonst nicht erreicht wird',
     cost: '~20€ / Monat',
   },
 ];
 
-function getTodaySupps() {
-  return state.suppLog ? (state.suppLog[todayStr()] || {}) : {};
+function getSuppDoseKey(suppId, doseId) { return `${suppId}_${doseId}`; }
+
+function getTodaySuppDoses() {
+  if(!state.suppLog) return {};
+  return state.suppLog[todayStr()] || {};
 }
 
-function toggleSupp(id) {
+function toggleSuppDose(suppId, doseId) {
   if(!state.suppLog) state.suppLog = {};
   if(!state.suppLog[todayStr()]) state.suppLog[todayStr()] = {};
-  const current = state.suppLog[todayStr()][id];
-  state.suppLog[todayStr()][id] = !current;
+  const key = getSuppDoseKey(suppId, doseId);
+  const current = state.suppLog[todayStr()][key];
+  state.suppLog[todayStr()][key] = current ? null : new Date().toTimeString().slice(0,5);
   saveState();
   renderSupplements();
-  if(!current) showToast('✅ ' + SUPPLEMENTS.find(s=>s.id===id).name + ' abgehakt!');
+  renderTodaySupps();
+  const s = SUPPLEMENTS.find(s=>s.id===suppId);
+  const d = s.doses.find(d=>d.id===doseId);
+  if(!current) showToast('✅ '+s.name+' ('+d.label+') eingenommen!');
 }
 
-function getSuppStreak(id) {
+function getSuppStreak(suppId) {
   if(!state.suppLog) return 0;
   let streak = 0;
   const d = new Date();
-  for(let i=0; i<30; i++) {
-    const ds = new Date(d);
-    ds.setDate(d.getDate() - i);
+  for(let i=0; i<60; i++) {
+    const ds = new Date(d); ds.setDate(d.getDate()-i);
     const key = ds.toISOString().split('T')[0];
-    if(state.suppLog[key] && state.suppLog[key][id]) streak++;
-    else if(i > 0) break;
+    const dayLog = state.suppLog[key] || {};
+    const supp = SUPPLEMENTS.find(s=>s.id===suppId);
+    const anyDone = supp.doses.some(dose => dayLog[getSuppDoseKey(suppId, dose.id)]);
+    if(anyDone) streak++;
+    else if(i>0) break;
   }
   return streak;
 }
 
-function getSuppRate(id) {
+function getSuppRate(suppId) {
   if(!state.suppLog) return 0;
-  const last14 = [];
   const d = new Date();
-  for(let i=0; i<14; i++) {
-    const ds = new Date(d);
-    ds.setDate(d.getDate() - i);
+  let done = 0;
+  for(let i=0;i<14;i++) {
+    const ds = new Date(d); ds.setDate(d.getDate()-i);
     const key = ds.toISOString().split('T')[0];
-    last14.push(state.suppLog[key] && state.suppLog[key][id] ? 1 : 0);
+    const dayLog = state.suppLog[key] || {};
+    const supp = SUPPLEMENTS.find(s=>s.id===suppId);
+    if(supp.doses.some(dose => dayLog[getSuppDoseKey(suppId, dose.id)])) done++;
   }
-  return Math.round(last14.reduce((a,b)=>a+b,0) / 14 * 100);
+  return Math.round(done/14*100);
 }
 
 function renderSupplements() {
   const cont = document.getElementById('suppContent');
   if(!cont) return;
-  const todayLog = getTodaySupps();
+  const todayLog = getTodaySuppDoses();
 
   cont.innerHTML = `
     <div style="font-size:0.75rem;color:var(--muted);text-align:center;margin-bottom:14px">
-      Tippe auf ein Supplement um es für heute abzuhaken
+      Tippe auf eine Dosis um sie mit Uhrzeit abzuhaken
     </div>
     ${SUPPLEMENTS.map(s => {
-      const done = !!todayLog[s.id];
       const streak = getSuppStreak(s.id);
       const rate = getSuppRate(s.id);
+      const allDone = s.doses.every(d => todayLog[getSuppDoseKey(s.id, d.id)]);
       return `
-      <div onclick="toggleSupp('${s.id}')" style="
-        background:var(--card);border:2px solid ${done ? s.color : 'var(--border)'};
-        border-radius:16px;padding:16px;margin-bottom:12px;cursor:pointer;
-        transition:all 0.15s;${done ? 'background:rgba(79,70,229,0.05)' : ''}
-      ">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
-          <div style="width:44px;height:44px;border-radius:12px;background:${done?s.color:'var(--surf)'};
-            display:flex;align-items:center;justify-content:center;font-size:1.4rem;
-            transition:all 0.15s;flex-shrink:0">
-            ${done ? '✓' : s.icon}
+      <div class="card" style="border-color:${allDone?s.color:'var(--border)'}">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+          <div style="width:42px;height:42px;border-radius:11px;background:${allDone?s.color:'var(--or-d)'};
+            display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0">
+            ${allDone?'✓':s.icon}
           </div>
           <div style="flex:1">
             <div style="font-weight:700;font-size:0.95rem">${s.name}</div>
-            <div style="font-size:0.78rem;color:var(--muted);margin-top:1px">📏 ${s.dose}</div>
+            <div style="font-size:0.75rem;color:var(--muted)">💰 ${s.cost}</div>
           </div>
           <div style="text-align:right">
-            <div style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:${s.color};line-height:1">${streak}</div>
-            <div style="font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px">Streak</div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:${s.color};line-height:1">${streak}</div>
+            <div style="font-size:0.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px">Streak</div>
           </div>
         </div>
 
-        <div style="background:var(--surf);border-radius:8px;padding:10px 12px;margin-bottom:8px">
-          <div style="font-size:0.78rem;color:var(--muted);margin-bottom:2px">⏰ <strong style="color:var(--txt)">${s.timing}</strong></div>
-          <div style="font-size:0.78rem;color:var(--muted);margin-top:4px">💪 ${s.benefit}</div>
+        <div style="font-size:0.78rem;color:var(--muted);margin-bottom:10px;padding:8px 10px;background:var(--or-d);border-radius:8px">
+          💪 ${s.benefit}
         </div>
 
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div style="font-size:0.72rem;color:var(--muted)">💰 ${s.cost}</div>
-          <div style="display:flex;align-items:center;gap:6px">
-            <div style="font-size:0.72rem;color:var(--muted)">14-Tage: ${rate}%</div>
-            <div style="width:60px;height:5px;background:var(--border);border-radius:3px;overflow:hidden">
-              <div style="width:${rate}%;height:100%;background:${s.color};border-radius:3px"></div>
+        <div style="font-size:0.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Dosen heute</div>
+        ${s.doses.map(dose => {
+          const key = getSuppDoseKey(s.id, dose.id);
+          const takenAt = todayLog[key];
+          return `<div onclick="toggleSuppDose('${s.id}','${dose.id}')"
+            style="display:flex;align-items:center;gap:10px;padding:11px 12px;
+            border-radius:10px;cursor:pointer;margin-bottom:6px;
+            background:${takenAt?'rgba(79,70,229,0.06)':'var(--surf)'};
+            border:1.5px solid ${takenAt?s.color:'var(--border)'}">
+            <div style="width:22px;height:22px;border-radius:50%;
+              border:2px solid ${takenAt?s.color:'var(--muted)'};
+              background:${takenAt?s.color:'transparent'};
+              display:flex;align-items:center;justify-content:center;
+              font-size:0.75rem;color:${takenAt?'#fff':'var(--muted)'};flex-shrink:0">
+              ${takenAt?'✓':''}
             </div>
-          </div>
-        </div>
+            <div style="flex:1">
+              <div style="font-weight:600;font-size:0.88rem">${dose.label}</div>
+              <div style="font-size:0.75rem;color:var(--muted)">${dose.dose} · ${dose.time}</div>
+            </div>
+            ${takenAt?`<div style="font-size:0.75rem;font-weight:700;color:${s.color}">✓ ${takenAt} Uhr</div>`
+              :`<div style="font-size:0.75rem;color:var(--muted)">Ausstehend</div>`}
+          </div>`;
+        }).join('')}
 
-        ${done ? `<div style="text-align:center;margin-top:10px;font-size:0.78rem;color:${s.color};font-weight:700">✓ Heute eingenommen</div>` : `<div style="text-align:center;margin-top:10px;font-size:0.78rem;color:var(--muted)">Tippen zum Abhaken</div>`}
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">
+          <div style="font-size:0.72rem;color:var(--muted)">14-Tage Konsistenz: ${rate}%</div>
+          <div style="display:flex;gap:3px">${Array.from({length:14},(_,i)=>{
+            const d=new Date(); d.setDate(d.getDate()-(13-i));
+            const k=d.toISOString().split('T')[0];
+            const dl=state.suppLog&&state.suppLog[k]||{};
+            const done=s.doses.some(dose=>dl[getSuppDoseKey(s.id,dose.id)]);
+            return `<div style="width:12px;height:12px;border-radius:3px;background:${done?s.color:'var(--border)'}"></div>`;
+          }).join('')}</div>
+        </div>
       </div>`;
     }).join('')}
-
-    <div class="card-sm" style="margin-top:4px">
-      <div style="font-size:0.7rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px">📅 Letzte 14 Tage</div>
-      ${SUPPLEMENTS.map(s => {
-        const d = new Date();
-        const dots = Array.from({length:14}, (_,i) => {
-          const ds = new Date(d);
-          ds.setDate(d.getDate() - (13-i));
-          const key = ds.toISOString().split('T')[0];
-          const done = state.suppLog && state.suppLog[key] && state.suppLog[key][s.id];
-          return `<div style="width:14px;height:14px;border-radius:4px;background:${done?s.color:'var(--border)'}"></div>`;
-        }).join('');
-        return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-          <div style="font-size:0.8rem;font-weight:600;min-width:90px">${s.icon} ${s.name.split(' ')[0]}</div>
-          <div style="display:flex;gap:3px;flex-wrap:wrap">${dots}</div>
-        </div>`;
-      }).join('')}
-    </div>
   `;
 }
 
 function renderTodaySupps() {
   const cont = document.getElementById('todaySuppQuick');
   if(!cont) return;
-  const todayLog = getTodaySupps();
-  cont.innerHTML = SUPPLEMENTS.map(s => {
-    const done = !!todayLog[s.id];
-    return `<div onclick="toggleSuppToday('${s.id}',this)"
-      class="workout-done ${done?'checked':''}" style="margin-bottom:6px">
-      <div class="check-circle" style="${done?'background:var(--teal);border-color:var(--teal);color:#111':''}">${done?'✓':''}</div>
-      <div class="workout-done-text">
-        <div class="main">${s.icon} ${s.name}</div>
-        <div class="sub">${s.dose} · ${s.timing}</div>
-      </div>
-    </div>`;
-  }).join('');
+  const todayLog = getTodaySuppDoses();
+  cont.innerHTML = SUPPLEMENTS.map(s =>
+    s.doses.map(dose => {
+      const key = getSuppDoseKey(s.id, dose.id);
+      const takenAt = todayLog[key];
+      return `<div onclick="toggleSuppDose('${s.id}','${dose.id}')"
+        class="workout-done ${takenAt?'checked':''}" style="margin-bottom:6px">
+        <div class="check-circle" style="${takenAt?'background:var(--teal);border-color:var(--teal);color:#fff':''}">
+          ${takenAt?'✓':''}
+        </div>
+        <div class="workout-done-text">
+          <div class="main">${s.icon} ${s.name} – ${dose.label}</div>
+          <div class="sub">${dose.dose} · ${takenAt?('✓ '+takenAt+' Uhr'):dose.time}</div>
+        </div>
+      </div>`;
+    }).join('')
+  ).join('');
 }
 
-function toggleSuppToday(id, el) {
-  toggleSupp(id);
-  renderTodaySupps();
+function toggleSuppToday(id, el) { /* legacy compat */ }
+
+// ==================== WATER TRACKER ====================
+const WATER_GOAL = 2500; // ml
+const WATER_PORTIONS = [200, 300, 500, 750];
+
+function getTodayWater() {
+  if(!state.waterLog) return [];
+  return state.waterLog[todayStr()] || [];
+}
+
+function addWater(ml) {
+  if(!state.waterLog) state.waterLog = {};
+  if(!state.waterLog[todayStr()]) state.waterLog[todayStr()] = [];
+  state.waterLog[todayStr()].push({ml, time: new Date().toTimeString().slice(0,5)});
+  saveState();
+  renderWaterQuick();
+  renderWater();
+  showToast('💧 +' + ml + 'ml getrunken!');
+}
+
+function removeLastWater() {
+  if(!state.waterLog || !state.waterLog[todayStr()]) return;
+  state.waterLog[todayStr()].pop();
+  saveState();
+  renderWaterQuick();
+  renderWater();
+}
+
+function getTodayWaterTotal() {
+  return getTodayWater().reduce((s,e)=>s+e.ml, 0);
+}
+
+function renderWaterQuick() {
+  const cont = document.getElementById('waterQuick');
+  if(!cont) return;
+  const total = getTodayWaterTotal();
+  const pct = Math.min(100, Math.round(total/WATER_GOAL*100));
+  cont.innerHTML = `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+      <div style="flex:1">
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+          <span style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--teal)">${(total/1000).toFixed(1)}L</span>
+          <span style="font-size:0.8rem;color:var(--muted);align-self:flex-end">Ziel: ${WATER_GOAL/1000}L</span>
+        </div>
+        <div style="height:8px;background:var(--border);border-radius:100px;overflow:hidden">
+          <div style="width:${pct}%;height:100%;background:var(--teal);border-radius:100px;transition:width 0.3s"></div>
+        </div>
+      </div>
+      <div style="font-size:1.6rem">💧</div>
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      ${WATER_PORTIONS.map(ml=>`
+        <button class="btn btn-ghost btn-sm" onclick="addWater(${ml})" style="flex:1;min-width:60px;font-size:0.8rem">
+          +${ml}ml
+        </button>`).join('')}
+      <button class="btn btn-sm" onclick="removeLastWater()" style="background:var(--red-d);color:var(--red);border:1px solid rgba(220,38,38,0.2);font-size:0.75rem">↩</button>
+    </div>`;
+}
+
+function renderWater() {
+  const cont = document.getElementById('waterContent');
+  if(!cont) return;
+  const total = getTodayWaterTotal();
+  const pct = Math.min(100, Math.round(total/WATER_GOAL*100));
+  const entries = getTodayWater();
+  cont.innerHTML = `
+    <div class="card" style="text-align:center;border-color:${pct>=100?'var(--teal)':'var(--border)'}">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:3.5rem;color:var(--teal);line-height:1">${(total/1000).toFixed(2)}L</div>
+      <div style="font-size:0.82rem;color:var(--muted);margin-bottom:14px">von ${WATER_GOAL/1000}L Tagesziel (${pct}%)</div>
+      <div style="height:12px;background:var(--border);border-radius:100px;overflow:hidden;margin-bottom:14px">
+        <div style="width:${pct}%;height:100%;background:var(--teal);border-radius:100px;transition:width 0.3s"></div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+        ${WATER_PORTIONS.map(ml=>`
+          <button class="btn btn-ghost" onclick="addWater(${ml});switchTrackTab('water',document.querySelector('.track-tab:nth-child(5)'))" style="font-size:0.85rem">
+            💧 +${ml}ml
+          </button>`).join('')}
+      </div>
+      ${entries.length>0?`<button class="btn btn-sm" onclick="removeLastWater();switchTrackTab('water',document.querySelector('.track-tab:nth-child(5)'))" style="background:var(--red-d);color:var(--red);border:1px solid rgba(220,38,38,0.2);margin-top:8px">↩ Letzte Eingabe rückgängig</button>`:''}
+    </div>
+    ${entries.length>0?`
+    <div class="card">
+      <div class="card-title"><div class="ico t">📋</div> Heute getrunken</div>
+      ${entries.slice().reverse().map(e=>`
+        <div class="weight-row">
+          <div class="weight-date">${e.time} Uhr</div>
+          <div style="font-size:0.88rem;font-weight:600">💧 ${e.ml}ml</div>
+        </div>`).join('')}
+    </div>`:''}
+  `;
+}
+
+// ==================== KALORIENCHECK ====================
+function renderKcal() {
+  const cont = document.getElementById('kcalContent');
+  if(!cont) return;
+  const dow = today().getDay();
+  const planDay = PLAN_STRUCTURE[dow===0?6:dow-1];
+  if(!planDay) { cont.innerHTML='<div class="empty"><div class="emo">📅</div>Kein Plan für heute</div>'; return; }
+
+  let total = 0;
+  const rows = planDay.slots.map((slot,si) => {
+    const di = dow===0?6:dow-1;
+    const recipe = getSelectedRecipe(di, si, slot.cat);
+    if(!recipe) return '';
+    total += recipe.kcal;
+    return `<div class="meal-item">
+      <div class="meal-type-l">${slot.type}</div>
+      <div><div class="meal-name-l">${recipe.name}</div></div>
+      <div class="meal-kcal-l">${recipe.kcal} kcal</div>
+    </div>`;
+  }).join('');
+
+  const goal = 1900;
+  const diff = total - goal;
+  const pct = Math.min(100, Math.round(total/goal*100));
+  cont.innerHTML = `
+    <div class="card" style="border-color:${Math.abs(diff)<100?'var(--teal)':diff>0?'var(--red)':'var(--border)'}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:10px">
+        <div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:3rem;color:${diff>150?'var(--red)':diff<-150?'var(--teal)':'var(--or)'};line-height:1">${total}</div>
+          <div style="font-size:0.78rem;color:var(--muted)">kcal geplant heute</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:0.9rem;font-weight:700;color:${diff>0?'var(--red)':'var(--teal)'}">${diff>0?'+':''}${diff} kcal</div>
+          <div style="font-size:0.75rem;color:var(--muted)">vs. Ziel ${goal} kcal</div>
+        </div>
+      </div>
+      <div style="height:10px;background:var(--border);border-radius:100px;overflow:hidden">
+        <div style="width:${pct}%;height:100%;background:${pct>110?'var(--red)':'var(--or)'};border-radius:100px"></div>
+      </div>
+      <div style="font-size:0.75rem;color:var(--muted);margin-top:6px;text-align:center">${pct}% des Tagesziels</div>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="ico y">🍽️</div> Heutige Mahlzeiten</div>
+      ${rows}
+      <div style="display:flex;justify-content:space-between;padding:10px 12px;background:var(--or-d);border-radius:10px;margin-top:6px">
+        <div style="font-weight:700;font-size:0.9rem">Gesamt</div>
+        <div style="font-weight:700;color:var(--or)">${total} kcal</div>
+      </div>
+    </div>
+  `;
+}
+
+// ==================== KÖRPERMASSE ====================
+const BODY_MEASURES = [
+  {id:'bauch', label:'Bauchumfang', icon:'📏', unit:'cm', tip:'Morgens nüchtern, auf Nabelhöhe'},
+  {id:'brust', label:'Brustumfang', icon:'📏', unit:'cm', tip:'Auf Höhe der Brustwarzen'},
+  {id:'hueft', label:'Hüftumfang', icon:'📏', unit:'cm', tip:'An der breitesten Stelle'},
+  {id:'oberschenkel', label:'Oberschenkel', icon:'📏', unit:'cm', tip:'Mitte des linken Oberschenkels'},
+  {id:'oberarm', label:'Oberarm', icon:'📏', unit:'cm', tip:'Angespannt, Mitte des Oberarms'},
+];
+
+function saveBodyMeasure(id) {
+  const el = document.getElementById('bm_'+id);
+  if(!el) return;
+  const val = parseFloat(el.value);
+  if(isNaN(val)||val<=0) { showToast('❌ Bitte gültigen Wert eingeben'); return; }
+  if(!state.bodyLog) state.bodyLog = {};
+  if(!state.bodyLog[id]) state.bodyLog[id] = [];
+  state.bodyLog[id].push({date:todayStr(), val});
+  saveState();
+  renderBody();
+  showToast('📏 '+BODY_MEASURES.find(m=>m.id===id).label+': '+val+'cm gespeichert!');
+}
+
+function renderBody() {
+  const cont = document.getElementById('bodyContent');
+  if(!cont) return;
+  cont.innerHTML = `
+    <div class="card-sm" style="margin-bottom:14px;font-size:0.82rem;color:var(--muted);border-left:3px solid var(--or);padding-left:14px">
+      💡 Körpermaße einmal pro Woche messen – morgens, nüchtern, gleiche Bedingungen.
+    </div>
+    ${BODY_MEASURES.map(m => {
+      const log = (state.bodyLog && state.bodyLog[m.id]) || [];
+      const last = log.length>0?log[log.length-1]:null;
+      const first = log.length>1?log[0]:null;
+      const diff = last&&first ? (last.val-first.val).toFixed(1) : null;
+      return `<div class="card">
+        <div class="card-title"><div class="ico">${m.icon}</div>${m.label}</div>
+        <div style="font-size:0.75rem;color:var(--muted);margin-bottom:10px">💡 ${m.tip}</div>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px">
+          <input class="inp" id="bm_${m.id}" type="number" step="0.1" placeholder="${last?last.val:'z.B. 95.5'}" style="flex:1">
+          <span style="color:var(--muted);font-size:0.85rem">${m.unit}</span>
+          <button class="btn btn-or btn-sm" onclick="saveBodyMeasure('${m.id}')">Speichern</button>
+        </div>
+        ${log.length>0?`
+        <div style="display:grid;grid-template-columns:1fr 1fr ${diff!==null?'1fr':''};gap:8px;margin-bottom:8px">
+          <div class="card-sm" style="text-align:center">
+            <div style="font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px">Aktuell</div>
+            <div style="font-weight:700;font-size:1.1rem;color:var(--or)">${last.val}${m.unit}</div>
+          </div>
+          ${first?`<div class="card-sm" style="text-align:center">
+            <div style="font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px">Start</div>
+            <div style="font-weight:700;font-size:1.1rem">${first.val}${m.unit}</div>
+          </div>`:'<div></div>'}
+          ${diff!==null?`<div class="card-sm" style="text-align:center">
+            <div style="font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px">Veränderung</div>
+            <div style="font-weight:700;font-size:1.1rem;color:${parseFloat(diff)<=0?'var(--teal)':'var(--red)'}">${parseFloat(diff)>0?'+':''}${diff}${m.unit}</div>
+          </div>`:''}
+        </div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap">${log.slice(-6).reverse().map(l=>`<div class="wl-chip">${fmtDate(l.date)}: ${l.val}${m.unit}</div>`).join('')}</div>`:''}
+      </div>`;
+    }).join('')}
+  `;
+}
+
+// ==================== EINKAUFSLISTE ====================
+const SHOPPING_ITEMS = {
+  'Protein': ['Hähnchenbrust 1kg','Rinderhack 5% 400g','Lachsfilet 400g','Putenbrustfilet 400g','Eier 12 Stück','Thunfisch 2 Dosen','Magerquark 500g','Griechischer Joghurt 500g','Hüttenkäse 250g','Rote Linsen 500g','Kichererbsen (Dose)'],
+  'Gemüse & Obst': ['Brokkoli 500g','Paprika 3 Stück','Zucchini 2 Stück','Spinat TK 500g','Karotten 1kg','Süßkartoffeln 500g','Tomaten 500g','Gurken 2 Stück','Äpfel 1kg','Beeren TK 500g','Avocado 2 Stück'],
+  'Kohlenhydrate': ['Haferflocken 1kg','Vollkornbrot 1 Laib','Vollkornnudeln 500g','Vollkornreis 1kg','Kartoffeln 1kg','Vollkorn-Wraps 4 Stück','Reiswaffeln'],
+  'Basics & Fette': ['Olivenöl extra vergine','Tomaten Dose 4×','Mandeln 200g','Erdnussbutter natur','Chia-Samen 200g','Kokosmilch light','Sojasoße natriumarm','Milch 1,5% 2L','Leichter Käse 150g'],
+};
+
+function renderShop() {
+  const cont = document.getElementById('shopContent');
+  if(!cont) return;
+  if(!state.shopChecked) state.shopChecked = {};
+
+  // Build flat indexed list – avoids passing strings with apostrophes in onclick
+  const allItems = [];
+  Object.entries(SHOPPING_ITEMS).forEach(([cat, items]) =>
+    items.forEach(item => allItems.push({cat, item}))
+  );
+  window._shopItems = allItems;
+
+  const catHtml = {};
+  Object.keys(SHOPPING_ITEMS).forEach(cat => { catHtml[cat] = ''; });
+  allItems.forEach((entry, idx) => {
+    const checked = !!state.shopChecked[idx];
+    catHtml[entry.cat] += `<div onclick="toggleShopItem(${idx})" style="
+      display:flex;align-items:center;gap:10px;padding:9px 4px;
+      border-bottom:1px solid var(--border);cursor:pointer;
+      opacity:${checked ? '0.4' : '1'}">
+      <div style="width:20px;height:20px;border-radius:5px;flex-shrink:0;
+        border:2px solid ${checked ? 'var(--teal)' : 'var(--muted)'};
+        background:${checked ? 'var(--teal)' : 'transparent'};
+        display:flex;align-items:center;justify-content:center;
+        font-size:0.75rem;color:#fff">${checked ? '✓' : ''}</div>
+      <div style="font-size:0.87rem;${checked ? 'text-decoration:line-through' : ''}">${entry.item}</div>
+    </div>`;
+  });
+
+  cont.innerHTML =
+    '<div style="display:flex;gap:8px;margin-bottom:14px">' +
+      '<button class="btn btn-or" style="flex:1" onclick="clearShopList()">🔄 Liste zurücksetzen</button>' +
+    '</div>' +
+    Object.entries(SHOPPING_ITEMS).map(([cat]) =>
+      '<div class="card">' +
+        '<div class="card-title"><div class="ico y">🛒</div>' + cat + '</div>' +
+        catHtml[cat] +
+      '</div>'
+    ).join('');
+}
+
+function toggleShopItem(idx) {
+  if(!state.shopChecked) state.shopChecked = {};
+  state.shopChecked[idx] = !state.shopChecked[idx];
+  saveState();
+  renderShop();
+}
+
+function clearShopList() {
+  state.shopChecked = {};
+  saveState();
+  renderShop();
+  showToast('🛒 Einkaufsliste zurückgesetzt!');
+}
+
+function renderPrep() {
+  const cont = document.getElementById('prepContent');
+  if(!cont) return;
+  if(!state.prepChecked) state.prepChecked = {};
+  const weekKey = getWeekKey();
+  const checked = state.prepChecked[weekKey] || {};
+  const doneCount = PREP_TASKS.filter(t=>checked[t.id]).length;
+
+  cont.innerHTML = `
+    <div class="card" style="text-align:center;border-color:${doneCount===PREP_TASKS.length?'var(--teal)':'var(--border)'}">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:2.5rem;color:var(--or);line-height:1">${doneCount} / ${PREP_TASKS.length}</div>
+      <div style="font-size:0.8rem;color:var(--muted)">Aufgaben erledigt</div>
+      <div style="height:8px;background:var(--border);border-radius:100px;overflow:hidden;margin-top:10px">
+        <div style="width:${Math.round(doneCount/PREP_TASKS.length*100)}%;height:100%;background:var(--teal);border-radius:100px;transition:width 0.3s"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="ico">🥡</div> Sonntags Meal Prep – diese Woche</div>
+      ${PREP_TASKS.map(task => {
+        const done = !!checked[task.id];
+        return `<div onclick="togglePrepTask('${task.id}')" style="
+          display:flex;gap:10px;padding:12px 4px;
+          border-bottom:1px solid var(--border);cursor:pointer">
+          <div style="width:22px;height:22px;border-radius:6px;flex-shrink:0;margin-top:1px;
+            border:2px solid ${done?'var(--teal)':'var(--muted)'};
+            background:${done?'var(--teal)':'transparent'};
+            display:flex;align-items:center;justify-content:center;
+            font-size:0.75rem;color:#fff">${done?'✓':''}</div>
+          <div style="flex:1;opacity:${done?'0.5':'1'}">
+            <div style="font-weight:600;font-size:0.88rem;${done?'text-decoration:line-through':''}">${task.label}</div>
+            <div style="font-size:0.75rem;color:var(--muted);margin-top:2px">⏱️ ${task.time} · ${task.tip}</div>
+          </div>
+        </div>`;
+      }).join('')}
+      <button class="btn btn-or btn-block" style="margin-top:12px" onclick="clearPrepList()">🔄 Neue Woche</button>
+    </div>
+  `;
+}
+
+function getWeekKey() {
+  const d = new Date();
+  const mon = new Date(d);
+  mon.setDate(d.getDate() - (d.getDay()===0?6:d.getDay()-1));
+  return mon.toISOString().split('T')[0];
+}
+
+function togglePrepTask(id) {
+  if(!state.prepChecked) state.prepChecked = {};
+  const wk = getWeekKey();
+  if(!state.prepChecked[wk]) state.prepChecked[wk] = {};
+  state.prepChecked[wk][id] = !state.prepChecked[wk][id];
+  saveState();
+  renderPrep();
+}
+
+function clearPrepList() {
+  if(!state.prepChecked) state.prepChecked = {};
+  state.prepChecked[getWeekKey()] = {};
+  saveState();
+  renderPrep();
+  showToast('✅ Neue Woche – los geht\'s!');
+}
+
+// ==================== UPDATE switchTrackTab ====================
+function switchTrackTab(tab, el) {
+  state.currentTrackTab = tab;
+  document.querySelectorAll('.track-tab').forEach(t=>t.classList.remove('active'));
+  if(el) el.classList.add('active');
+  ['trackWeight','trackGym','trackStreak','trackSupp','trackWater','trackKcal'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.style.display = 'none';
+  });
+  const map = {weight:'trackWeight',gym:'trackGym',streak:'trackStreak',supp:'trackSupp',water:'trackWater',kcal:'trackKcal'};
+  const target = document.getElementById(map[tab]);
+  if(target) target.style.display = 'block';
+  if(tab==='gym') renderGymWeightTracking();
+  if(tab==='streak') renderStreakHistory();
+  if(tab==='supp') renderSupplements();
+  if(tab==='water') renderWater();
+  if(tab==='kcal') renderKcal();
 }
 
 function init() {
   loadState();
+
+  // Theme
+  if(localStorage.getItem('fitplan_theme') === 'dark') {
+    document.body.classList.add('dark-mode');
+    const btn = document.getElementById('themeBtn');
+    if(btn) btn.textContent = '☀️';
+  }
 
   // Date header
   document.getElementById('hdrDate').textContent = today().toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long'});
@@ -1733,7 +2172,7 @@ function init() {
     navigator.serviceWorker.register('./sw.js').catch(()=>{});
   }
 
-  // Install hint (show if not standalone)
+  // Install hint
   if(!window.matchMedia('(display-mode: standalone)').matches && !window.navigator.standalone) {
     document.getElementById('installBanner').style.display = 'flex';
   }
