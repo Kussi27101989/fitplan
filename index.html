@@ -12,12 +12,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:#0f1117; --surf:#18191e; --card:#1f2128; --card2:#252830;
-  --or:#ff6b35; --or-d:rgba(255,107,53,0.13); --or-b:rgba(255,107,53,0.28);
-  --teal:#2de0b0; --teal-d:rgba(45,224,176,0.1);
-  --yel:#ffd166; --yel-d:rgba(255,209,102,0.1);
-  --red:#ff5a7a; --red-d:rgba(255,90,122,0.1);
-  --txt:#f0f1f5; --muted:#666b85; --border:rgba(255,255,255,0.07);
+  --bg:#f0f6ff; --surf:#ffffff; --card:#ffffff; --card2:#dbeafe;
+  --or:#4f46e5; --or-d:rgba(79,70,229,0.10); --or-b:rgba(79,70,229,0.22);
+  --teal:#0891b2; --teal-d:rgba(8,145,178,0.10);
+  --yel:#d97706; --yel-d:rgba(217,119,6,0.10);
+  --red:#dc2626; --red-d:rgba(220,38,38,0.10);
+  --txt:#0c1445; --muted:#64748b; --border:rgba(0,0,0,0.08);
   --r:14px; --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
@@ -32,7 +32,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font
 /* BOTTOM NAV */
 .bnav{
   position:fixed;bottom:0;left:0;right:0;
-  background:rgba(24,25,30,0.97);
+  background:rgba(240,246,255,0.97);
   backdrop-filter:blur(16px);
   border-top:1px solid var(--border);
   display:grid;grid-template-columns:repeat(5,1fr);
@@ -53,15 +53,15 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font
   display:flex;align-items:center;justify-content:space-between;
   padding:14px 16px 8px;
   position:sticky;top:0;z-index:50;
-  background:rgba(15,17,23,0.95);backdrop-filter:blur(12px);
+  background:rgba(240,246,255,0.95);backdrop-filter:blur(12px);
   border-bottom:1px solid var(--border);
 }
 .hdr-title{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:1px;color:var(--or);}
 .hdr-date{font-size:0.75rem;color:var(--muted);}
 
 /* CARDS */
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px;}
-.card-sm{background:var(--surf);border:1px solid var(--border);border-radius:10px;padding:12px;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,0.06);}
+.card-sm{background:var(--surf);border:1px solid var(--border);border-radius:10px;padding:12px;box-shadow:0 1px 3px rgba(0,0,0,0.05);}
 .card-title{font-weight:700;font-size:0.92rem;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
 .card-title .ico{width:28px;height:28px;border-radius:7px;background:var(--or-d);display:flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0;}
 .card-title .ico.t{background:var(--teal-d);}
@@ -76,7 +76,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font
 .tag-teal{background:var(--teal-d);color:var(--teal);}
 .tag-yel{background:var(--yel-d);color:var(--yel);}
 .tag-red{background:var(--red-d);color:var(--red);}
-.tag-grey{background:rgba(255,255,255,0.05);color:var(--muted);}
+.tag-grey{background:rgba(0,0,0,0.05);color:var(--muted);}
 
 /* BUTTONS */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;
@@ -101,7 +101,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font
 
 /* ---- TODAY PAGE ---- */
 .today-hero{
-  background:linear-gradient(135deg,rgba(255,107,53,0.1),rgba(45,224,176,0.05));
+  background:linear-gradient(135deg,rgba(79,70,229,0.08),rgba(8,145,178,0.05));
   border:1px solid var(--or-b);border-radius:var(--r);
   padding:18px;margin-bottom:14px;
 }
@@ -116,7 +116,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font
   border:1px solid var(--border);margin-bottom:8px;cursor:pointer;
   transition:border-color 0.15s;
 }
-.workout-done.checked{border-color:var(--teal);background:rgba(45,224,176,0.06);}
+.workout-done.checked{border-color:var(--teal);background:rgba(8,145,178,0.06);}
 .check-circle{
   width:26px;height:26px;border-radius:50%;border:2px solid var(--muted);
   display:flex;align-items:center;justify-content:center;flex-shrink:0;
@@ -157,7 +157,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font
 .ex-sets-label{font-size:0.65rem;color:var(--muted);letter-spacing:0.5px;text-transform:uppercase;}
 
 /* WEIGHT LOGGER */
-.weight-logger{border-top:1px solid var(--border);padding:12px 14px;background:rgba(255,255,255,0.02);}
+.weight-logger{border-top:1px solid var(--border);padding:12px 14px;background:rgba(0,0,0,0.02);}
 .wl-row{display:grid;grid-template-columns:1fr 80px;gap:8px;align-items:center;margin-bottom:8px;}
 .wl-label{font-size:0.78rem;color:var(--muted);font-weight:500;}
 .wl-val{font-weight:700;font-size:0.95rem;color:var(--teal);}
@@ -187,8 +187,8 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--txt);font
   background:var(--card);border:1px solid var(--border);color:var(--muted);
   cursor:pointer;transition:all 0.15s;
 }
-.pref-chip.excluded{background:var(--red-d);border-color:rgba(255,90,122,0.3);color:var(--red);text-decoration:line-through;}
-.pref-chip.liked{background:var(--teal-d);border-color:rgba(45,224,176,0.3);color:var(--teal);}
+.pref-chip.excluded{background:var(--red-d);border-color:rgba(220,38,38,0.3);color:var(--red);text-decoration:line-through;}
+.pref-chip.liked{background:var(--teal-d);border-color:rgba(8,145,178,0.3);color:var(--teal);}
 
 .day-meals{margin-bottom:20px;}
 .day-label-m{
@@ -243,7 +243,7 @@ canvas{width:100%!important;}
 
 /* MODAL */
 .modal-overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);
+  position:fixed;inset:0;background:rgba(12,20,69,0.5);backdrop-filter:blur(4px);
   z-index:200;display:none;align-items:flex-end;justify-content:center;
 }
 .modal-overlay.open{display:flex;}
@@ -257,7 +257,7 @@ canvas{width:100%!important;}
 .modal-title{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:0.5px;margin-bottom:16px;}
 
 /* RECIPE MODAL */
-.recipe-modal-header{background:linear-gradient(135deg,rgba(255,107,53,0.12),rgba(45,224,176,0.06));border-radius:12px;padding:16px;margin-bottom:16px;}
+.recipe-modal-header{background:linear-gradient(135deg,rgba(79,70,229,0.10),rgba(8,145,178,0.06));border-radius:12px;padding:16px;margin-bottom:16px;}
 .recipe-modal-name{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:0.5px;line-height:1.1;margin-bottom:6px;}
 .recipe-modal-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;}
 .macro-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;}
@@ -1135,7 +1135,7 @@ function renderWeightChart() {
   ctx.clearRect(0,0,W,H);
 
   // Grid
-  ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+  ctx.strokeStyle = 'rgba(0,0,0,0.06)';
   ctx.lineWidth = 1;
   for(let i=0;i<=3;i++) {
     const y = padT + (chartH/3)*i;
@@ -1157,8 +1157,8 @@ function renderWeightChart() {
 
   // Fill
   const grad = ctx.createLinearGradient(0,padT,0,padT+chartH);
-  grad.addColorStop(0,'rgba(255,107,53,0.25)');
-  grad.addColorStop(1,'rgba(255,107,53,0)');
+  grad.addColorStop(0,'rgba(79,70,229,0.18)');
+  grad.addColorStop(1,'rgba(79,70,229,0)');
   ctx.fillStyle = grad;
   ctx.beginPath();
   logs.forEach((l,i) => {
@@ -1261,7 +1261,7 @@ function renderWeek() {
   cont.innerHTML = order.map(dow => {
     const s = WEEK_SCHEDULE[dow];
     const isToday = today().getDay() === dow;
-    return `<div class="card${isToday?' style="border-color:var(--or-b);background:rgba(255,107,53,0.05)"':''}">
+    return `<div class="card${isToday?' style="border-color:var(--or-b);background:rgba(79,70,229,0.05)"':''}">
       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
         <div style="min-width:90px">
           <div style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem">${s.day}${isToday?' <span style="color:var(--or);font-size:0.7rem">● HEUTE</span>':''}</div>
@@ -1643,7 +1643,7 @@ function renderSupplements() {
       <div onclick="toggleSupp('${s.id}')" style="
         background:var(--card);border:2px solid ${done ? s.color : 'var(--border)'};
         border-radius:16px;padding:16px;margin-bottom:12px;cursor:pointer;
-        transition:all 0.15s;${done ? 'background:rgba(255,107,53,0.04)' : ''}
+        transition:all 0.15s;${done ? 'background:rgba(79,70,229,0.05)' : ''}
       ">
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
           <div style="width:44px;height:44px;border-radius:12px;background:${done?s.color:'var(--surf)'};
