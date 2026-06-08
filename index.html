@@ -396,7 +396,20 @@ body.dark-mode .card-sm { box-shadow:none; }
     <!-- GYM -->
     <div class="page" id="page-gym">
       <div class="sec-title">GYM-PLAN</div>
-      <div class="sec-sub">Mo · Do · Fr — Fußball: Mo & Mi</div>
+      <div class="sec-sub" id="gymPlanSub">Mo · Do · Fr — Fußball: Mo & Mi</div>
+
+      <!-- Plan switcher -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px">
+        <button id="planBtn3er" onclick="switchGymPlan('split')"
+          class="btn btn-or" style="font-size:0.85rem;padding:10px">
+          💪 3er Split
+        </button>
+        <button id="planBtnFull" onclick="switchGymPlan('fullbody')"
+          class="btn btn-ghost" style="font-size:0.85rem;padding:10px">
+          🔄 Fullbody 3×
+        </button>
+      </div>
+      <div id="planInfoBanner" class="card-sm" style="margin-bottom:12px;font-size:0.78rem;color:var(--muted)"></div>
 
       <div class="gym-tabs" id="gymTabs"></div>
       <div id="gymContent"></div>
@@ -573,6 +586,62 @@ const WORKOUTS = {
       {id:'cardio_cool', name:'Cool-Down + Dehnen draußen', sets:'1', reps:'5–8 Min.', muscle:'Mobilität', tip:'Waden, Oberschenkel, Hüftbeuger dehnen – direkt nach der Einheit'},
     ]
   }
+};
+
+const WORKOUTS_FULLBODY = {
+  FA: {
+    name: 'FULLBODY A', sub: 'Knie-dominant + Horizontal', day: 'Dienstag',
+    exercises: [
+      {id:'fb_beinpresse', name:'Beinpresse', sets:'4', reps:'10–12', muscle:'Quads · Glutes', tip:'Füße schulterbreit, Knie nicht überstrecken'},
+      {id:'fb_bankdruecken', name:'Bankdrücken (LH)', sets:'4', reps:'8–10', muscle:'Brust · Trizeps', tip:'Schulterblätter einziehen, kontrolliert drücken'},
+      {id:'fb_kabelrudern', name:'Kabelrudern (sitzend)', sets:'4', reps:'10–12', muscle:'Mittl. Rücken · Bizeps', tip:'Schulterblätter zusammenziehen, nicht swingen'},
+      {id:'fb_rdl', name:'Rumänisches Kreuzheben', sets:'3', reps:'10', muscle:'Hamstrings · Gesäß', tip:'Rücken gerade, Hüfte nach hinten schieben'},
+      {id:'fb_seitheben', name:'Seitheben', sets:'3', reps:'15', muscle:'Seitl. Schulter', tip:'Kleines Gewicht, saubere Form'},
+      {id:'fb_plank', name:'Plank', sets:'3', reps:'40 Sek.', muscle:'Core', tip:'Körper gerade, Bauch anspannen'},
+    ]
+  },
+  FB: {
+    name: 'FULLBODY B', sub: 'Hüft-dominant + Vertikal', day: 'Donnerstag',
+    exercises: [
+      {id:'fb_hip_thrust', name:'Hip Thrust (KH)', sets:'4', reps:'12', muscle:'Glutes · Hamstrings', tip:'Schultern auf Bank, Hüfte oben 1 Sek. halten'},
+      {id:'fb_latzug', name:'Latzug (weiter Griff)', sets:'4', reps:'10–12', muscle:'Latissimus · Bizeps', tip:'Brust raus, Ellbogen nach unten ziehen'},
+      {id:'fb_schulterdruecken', name:'Schulterdrücken (KH)', sets:'3', reps:'10–12', muscle:'Schultern · Trizeps', tip:'Rücken anlehnen, kein Hohlkreuz'},
+      {id:'fb_goblet', name:'Goblet Squat (KH)', sets:'3', reps:'12', muscle:'Quads · Core', tip:'Hantel vor Brust, tief in die Knie'},
+      {id:'fb_schraegbank', name:'Schrägbankdrücken (KH)', sets:'3', reps:'12', muscle:'Obere Brust', tip:'30° Winkel, leichter ansetzen als flach'},
+      {id:'fb_hollow', name:'Hollow Body Hold', sets:'3', reps:'30 Sek.', muscle:'Core · Stabilität', tip:'Arme und Beine gestreckt, Rücken am Boden'},
+    ]
+  },
+  FC: {
+    name: 'FULLBODY C', sub: 'Kraft-Fokus + Isolation', day: 'Samstag',
+    exercises: [
+      {id:'fb_squat', name:'Kniebeuge (LH oder Goblet)', sets:'4', reps:'8', muscle:'Quads · Glutes · Core', tip:'Aufrecht bleiben, Knie über Zehen'},
+      {id:'fb_kh_rudern', name:'KH-Rudern (einarmig)', sets:'3', reps:'10/Seite', muscle:'Rücken · Bizeps', tip:'Auf Bank abstützen, beide Seiten gleich'},
+      {id:'fb_kh_bank', name:'KH-Bankdrücken', sets:'3', reps:'10', muscle:'Brust · Schultern', tip:'Volle Bewegungsamplitude, kontrolliert'},
+      {id:'fb_beinstrecker', name:'Beinstrecker', sets:'3', reps:'15', muscle:'Quads', tip:'Langsam ablassen, 2 Sek. oben halten'},
+      {id:'fb_trizeps', name:'Trizeps-Pushdown (Kabel)', sets:'3', reps:'12', muscle:'Trizeps', tip:'Ellbogen fixiert, nur Unterarm bewegt sich'},
+      {id:'fb_bizeps', name:'Bizeps-Curl', sets:'3', reps:'12', muscle:'Bizeps', tip:'Kein Schwingen, langsam und kontrolliert'},
+      {id:'fb_crunch', name:'Ab-Wheel / Crunch', sets:'3', reps:'15', muscle:'Bauch', tip:'Langsam und kontrolliert, Spannung halten'},
+    ]
+  },
+  CARDIO: {
+    name: 'CARDIO', sub: 'Alternative zu Fußball – draußen', day: 'Mo / Mi wenn kein Fußball',
+    exercises: [
+      {id:'cardio_warm', name:'Aufwärmen – locker gehen', sets:'1', reps:'5 Min.', muscle:'Ganzkörper', tip:'Langsam losgehen, Gelenke mobilisieren'},
+      {id:'cardio_main', name:'Joggen oder Fahrrad draußen', sets:'1', reps:'25–35 Min.', muscle:'Ausdauer · Fettverbrennung', tip:'Puls 130–150 halten, gemütliches Tempo'},
+      {id:'cardio_hiit', name:'Sprint-Intervalle optional', sets:'5', reps:'30s schnell / 90s locker', muscle:'Kondition', tip:'Auf gerader Strecke: Vollgas 30 Sek., dann locker'},
+      {id:'cardio_cool', name:'Cool-Down + Dehnen draußen', sets:'1', reps:'5–8 Min.', muscle:'Mobilität', tip:'Waden, Oberschenkel, Hüftbeuger dehnen'},
+    ]
+  }
+};
+
+const WEEK_SCHEDULE_FULLBODY = {
+  0: {day:'Sonntag', type:'active', label:'Aktiv & Familie', tag:'tag-yel', icon:'👨‍👩‍👧'},
+  1: {day:'Montag', type:'football', label:'Fußball', tag:'tag-teal', icon:'⚽'},
+  2: {day:'Dienstag', type:'gym', label:'Fullbody A', tag:'tag-or', icon:'💪', gym:'FA'},
+  3: {day:'Mittwoch', type:'football', label:'Fußball', tag:'tag-teal', icon:'⚽'},
+  4: {day:'Donnerstag', type:'gym', label:'Fullbody B', tag:'tag-or', icon:'💪', gym:'FB'},
+  5: {day:'Freitag', type:'rest', label:'Erholung', tag:'tag-grey', icon:'😴'},
+  6: {day:'Samstag', type:'gym', label:'Fullbody C', tag:'tag-yel', icon:'💪', gym:'FC'},
 };
 
 const WEEK_SCHEDULE = {
@@ -824,6 +893,7 @@ let state = {
   gymWeights: {},
   workoutLog: [],
   weekPlan: {},
+  gymPlan: 'split',
   suppLog: {},
   waterLog: {},
   bodyLog: {},
@@ -1310,8 +1380,9 @@ function renderStreakHistory() {
 function renderWeek() {
   const cont = document.getElementById('weekContent');
   const order = [1,2,3,4,5,6,0];
+  const activeSchedule = getActiveSchedule();
   cont.innerHTML = order.map(dow => {
-    const s = WEEK_SCHEDULE[dow];
+    const s = activeSchedule[dow];
     const isToday = today().getDay() === dow;
     return `<div class="card${isToday?' style="border-color:var(--or-b);background:rgba(79,70,229,0.05)"':''}">
       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
@@ -1349,7 +1420,7 @@ function renderWeek() {
 function renderToday() {
   const d = today();
   const dow = d.getDay();
-  const sched = WEEK_SCHEDULE[dow];
+  const sched = getActiveSchedule()[dow] || WEEK_SCHEDULE[dow];
   document.getElementById('hdrDate').textContent = d.toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long'});
   document.getElementById('todayDay').textContent = sched.day.toUpperCase();
   document.getElementById('todayInfo').textContent = `${Math.floor(state.quickWeight*10)/10} kg aktuell`;
@@ -1404,6 +1475,7 @@ function renderToday() {
   if(state.weightLog.length > 0) state.quickWeight = state.weightLog[state.weightLog.length-1].val;
   document.getElementById('quickWeightDisplay').textContent = state.quickWeight.toFixed(1);
   renderTodaySupps();
+  renderWaterQuick();
 }
 
 function isWorkoutChecked(id) {
@@ -1459,13 +1531,71 @@ function saveQuickWeight() {
 }
 
 // ==================== GYM ====================
+// ==================== GYM PLAN SWITCH ====================
+function getActiveWorkouts() {
+  return state.gymPlan === 'fullbody' ? WORKOUTS_FULLBODY : WORKOUTS;
+}
+
+function getActiveSchedule() {
+  return state.gymPlan === 'fullbody' ? WEEK_SCHEDULE_FULLBODY : WEEK_SCHEDULE;
+}
+
+function switchGymPlan(plan) {
+  state.gymPlan = plan;
+  saveState();
+  // Update buttons
+  document.getElementById('planBtn3er').className = plan==='split' ? 'btn btn-or' : 'btn btn-ghost';
+  document.getElementById('planBtnFull').className = plan==='fullbody' ? 'btn btn-or' : 'btn btn-ghost';
+  document.getElementById('planBtn3er').style.fontSize = '0.85rem';
+  document.getElementById('planBtnFull').style.fontSize = '0.85rem';
+  document.getElementById('planBtn3er').style.padding = '10px';
+  document.getElementById('planBtnFull').style.padding = '10px';
+  // Reset tab to first workout
+  state.currentGymTab = plan==='fullbody' ? 'FA' : 'A';
+  renderGym();
+  // Update sub title
+  const sub = document.getElementById('gymPlanSub');
+  if(sub) sub.textContent = plan==='fullbody' ? 'Di · Do · Sa — Fußball: Mo & Mi' : 'Di · Do · Fr — Fußball: Mo & Mi';
+  showToast(plan==='fullbody' ? '🔄 Fullbody 3× aktiv!' : '💪 3er Split aktiv!');
+}
+
 function renderGym() {
   const tabs = document.getElementById('gymTabs');
-  const tabOrder = ['A','B','C','CARDIO'];
-  const tabLabels = {'A':'Einheit A','B':'Einheit B','C':'Einheit C','CARDIO':'Cardio'};
-  tabs.innerHTML = tabOrder.map(k =>
-    `<div class="gym-tab ${state.currentGymTab===k?'active':''}" onclick="switchGymTab('${k}',this)">${tabLabels[k]}</div>`
+  const workouts = getActiveWorkouts();
+  const plan = state.gymPlan;
+
+  // Sync button states
+  const btn3 = document.getElementById('planBtn3er');
+  const btnF = document.getElementById('planBtnFull');
+  if(btn3) { btn3.className = plan==='split'?'btn btn-or':'btn btn-ghost'; btn3.style.fontSize='0.85rem'; btn3.style.padding='10px'; }
+  if(btnF) { btnF.className = plan==='fullbody'?'btn btn-or':'btn btn-ghost'; btnF.style.fontSize='0.85rem'; btnF.style.padding='10px'; }
+
+  // Info banner
+  const banner = document.getElementById('planInfoBanner');
+  if(banner) {
+    if(plan==='fullbody') {
+      banner.innerHTML = '🔄 <strong>Fullbody 3×:</strong> Jede Muskelgruppe 3× pro Woche · Ideal für Fettabbau + Muskelerhalt · Di / Do / Sa';
+      banner.style.borderLeft = '3px solid var(--teal)';
+    } else {
+      banner.innerHTML = '💪 <strong>3er Split:</strong> Unterkörper+Rücken · Drücken+Schultern · Ganzkörper · Di / Do / Fr';
+      banner.style.borderLeft = '3px solid var(--or)';
+    }
+  }
+
+  // Ensure current tab is valid for active plan
+  const validTabs = Object.keys(workouts);
+  if(!validTabs.includes(state.currentGymTab)) {
+    state.currentGymTab = validTabs[0];
+  }
+
+  const tabLabels = plan==='fullbody'
+    ? {'FA':'Fullbody A','FB':'Fullbody B','FC':'Fullbody C','CARDIO':'Cardio'}
+    : {'A':'Einheit A','B':'Einheit B','C':'Einheit C','CARDIO':'Cardio'};
+
+  tabs.innerHTML = validTabs.map(k =>
+    `<div class="gym-tab ${state.currentGymTab===k?'active':''}" onclick="switchGymTab('${k}',this)">${tabLabels[k]||k}</div>`
   ).join('');
+
   renderGymContent();
 }
 
@@ -1477,7 +1607,9 @@ function switchGymTab(key, el) {
 }
 
 function renderGymContent() {
-  const w = WORKOUTS[state.currentGymTab];
+  const workouts = getActiveWorkouts();
+  const w = workouts[state.currentGymTab];
+  if(!w) return;
   const cont = document.getElementById('gymContent');
   cont.innerHTML = `
     <div class="card" style="background:var(--or-d);border-color:var(--or-b);margin-bottom:12px">
@@ -1602,7 +1734,9 @@ function markWorkoutDone() {
   if(!log) { log={date:tStr,exercises:[],type:state.currentGymTab}; state.workoutLog.push(log); }
   log.type = state.currentGymTab;
   if(!log.exercises) log.exercises = [];
-  WORKOUTS[state.currentGymTab].exercises.map(e=>e.id).forEach(id => {
+  const activeW = getActiveWorkouts();
+  if(!activeW[state.currentGymTab]) return;
+  activeW[state.currentGymTab].exercises.map(e=>e.id).forEach(id => {
     if(!log.exercises.includes(id)) log.exercises.push(id);
   });
   saveState();
