@@ -1393,13 +1393,18 @@ function getWeekGoal() {
   }
   return goal;
 }
+// Ein Tag zählt als Einheit, wenn Übungen abgehakt sind ODER eine
+// Fußball-/Cardio-Session markiert wurde.
+function isDayTrained(w) {
+  return (w.exercises && w.exercises.length > 0) || !!w.session;
+}
 function countWorkoutsInWeek(weekStart) {
   const start = localDateStr(weekStart);
   const endD = new Date(weekStart); endD.setDate(weekStart.getDate()+6);
   const end = localDateStr(endD);
   const days = new Set();
   state.workoutLog.forEach(w => {
-    if(w.exercises && w.exercises.length>0 && w.date>=start && w.date<=end) days.add(w.date);
+    if(isDayTrained(w) && w.date>=start && w.date<=end) days.add(w.date);
   });
   return days.size;
 }
@@ -1407,7 +1412,7 @@ function countWorkoutsInWeek(weekStart) {
 function renderStreakHistory() {
   const cont = document.getElementById('streakHistory');
   const workoutDays = [...state.workoutLog]
-    .filter(w => w.exercises && w.exercises.length > 0)
+    .filter(w => isDayTrained(w))
     .sort((a,b)=>b.date.localeCompare(a.date));
 
   const goal = getWeekGoal();
@@ -1463,13 +1468,19 @@ function renderStreakHistory() {
     html += `<div class="empty"><div class="emo">🔥</div>Noch kein Training abgehakt – leg los!</div>`;
   } else {
     html += `<div style="font-size:0.75rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin:14px 0 8px">Trainingshistorie</div>` +
-      workoutDays.slice(0,20).map(w=>
-        `<div class="weight-row">
+      workoutDays.slice(0,20).map(w=>{
+        const exCount = w.exercises ? w.exercises.length : 0;
+        const sessionLabel = w.session === 'football' ? '⚽ Fußball' : (w.session === 'cardio' ? '🏃 Cardio' : null);
+        const title = sessionLabel && exCount === 0
+          ? sessionLabel
+          : (w.type ? 'Einheit ' + w.type : (sessionLabel ? sessionLabel + ' + Gym' : 'Training'));
+        const detail = exCount > 0 ? exCount + ' Übungen' : (sessionLabel || '');
+        return `<div class="weight-row">
           <div class="weight-date">${fmtDate(w.date)}</div>
-          <div style="font-size:0.85rem;font-weight:600">${w.type?'Einheit '+w.type:'Training'}</div>
-          <div style="font-size:0.78rem;color:var(--teal);margin-left:auto">${w.exercises?w.exercises.length+' Übungen':''} ✓</div>
-        </div>`
-      ).join('');
+          <div style="font-size:0.85rem;font-weight:600">${title}</div>
+          <div style="font-size:0.78rem;color:var(--teal);margin-left:auto">${detail} ✓</div>
+        </div>`;
+      }).join('');
   }
   cont.innerHTML = html;
 }
@@ -1561,13 +1572,26 @@ function renderToday() {
     }
   } else if(sched.type === 'football') {
     wt.textContent = gymW ? '⚽ Fußball + Gym' : '⚽ Fußball';
-    let html = `<div class="card-sm" style="margin-bottom:8px">
-        <div style="font-weight:600;font-size:0.9rem">⚽ Fußball heute</div>
-        <div style="font-size:0.78rem;color:var(--muted);margin-top:2px">Vorher aufwärmen · genug trinken</div>
+    const todayLog = state.workoutLog.find(w => w.date === todayStr());
+    const session = todayLog ? todayLog.session : null;
+    const fbDone = session === 'football';
+    const cardioDone = session === 'cardio';
+    const circle = (filled, color) => `<div style="width:24px;height:24px;border-radius:50%;flex-shrink:0;border:2px solid ${filled?color:'var(--muted)'};background:${filled?color:'transparent'};display:flex;align-items:center;justify-content:center;font-size:0.8rem;color:#fff">${filled?'✓':''}</div>`;
+    let html = `<div class="card-sm" role="button" tabindex="0" aria-pressed="${fbDone}" aria-label="Fußball als erledigt markieren" onclick="toggleSession('football')"
+        style="display:flex;align-items:center;gap:12px;cursor:pointer;margin-bottom:8px;${fbDone?'border-color:var(--or);background:var(--or-d)':''}">
+        ${circle(fbDone,'var(--or)')}
+        <div style="flex:1">
+          <div style="font-weight:600;font-size:0.9rem">⚽ Fußball heute</div>
+          <div style="font-size:0.78rem;color:var(--muted);margin-top:2px">Vorher aufwärmen · genug trinken</div>
+        </div>
       </div>
-      <div class="card-sm" style="background:var(--teal-d);border-color:rgba(8,145,178,0.25);margin-bottom:8px">
-        <div style="font-weight:600;font-size:0.85rem;color:var(--teal)">🏃 Alternative, falls kein Fußball</div>
-        <div style="font-size:0.78rem;color:var(--muted);margin-top:2px">25–30 Min. Cardio (Laufen, Ergometer oder HIIT)</div>
+      <div class="card-sm" role="button" tabindex="0" aria-pressed="${cardioDone}" aria-label="Cardio als erledigt markieren" onclick="toggleSession('cardio')"
+        style="display:flex;align-items:center;gap:12px;cursor:pointer;margin-bottom:8px;background:var(--teal-d);border-color:${cardioDone?'var(--teal)':'rgba(8,145,178,0.25)'}">
+        ${circle(cardioDone,'var(--teal)')}
+        <div style="flex:1">
+          <div style="font-weight:600;font-size:0.85rem;color:var(--teal)">🏃 Alternative, falls kein Fußball</div>
+          <div style="font-size:0.78rem;color:var(--muted);margin-top:2px">25–30 Min. Cardio (Laufen, Ergometer oder HIIT)</div>
+        </div>
       </div>`;
     if(gymW) {
       html += `<div style="font-size:0.72rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin:10px 0 6px">Zusätzlich: ${gymW.name}</div>`
@@ -1617,6 +1641,18 @@ function toggleExercise(id, el) {
   saveState();
 }
 
+// Fußball- oder Cardio-Einheit für heute markieren (schließen sich gegenseitig aus).
+function toggleSession(type) {
+  const tStr = todayStr();
+  let log = state.workoutLog.find(w => w.date === tStr);
+  if(!log) { log = {date:tStr, exercises:[]}; state.workoutLog.push(log); }
+  if(!log.exercises) log.exercises = [];
+  log.session = (log.session === type) ? null : type;
+  saveState();
+  renderToday(); // aktualisiert Karten, Streak-Punkte und Wochenzähler
+  if(log.session) showToast((type === 'football' ? '⚽ Fußball' : '🏃 Cardio') + ' als Einheit markiert!');
+}
+
 function renderStreak() {
   const row = document.getElementById('streakRow');
   const schedule = getActiveSchedule();
@@ -1633,7 +1669,7 @@ function renderStreak() {
     const t = schedule[dd.getDay()].type;
     const hasSport = t === 'football' || t === 'gym';
     if(hasSport) goal++;
-    const done = state.workoutLog.some(w => w.date === ds && w.exercises && w.exercises.length > 0);
+    const done = state.workoutLog.some(w => w.date === ds && isDayTrained(w));
     if(done) doneCount++;
     const cls = done?'done':isToday?'today':'';
     html += `<div class="streak-dot ${cls}"><div class="dot-day">${DAYS_SHORT[dd.getDay()]}</div>${done?'✓':hasSport?'·':'—'}</div>`;
