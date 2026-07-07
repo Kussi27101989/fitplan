@@ -664,11 +664,11 @@ const WEEK_SCHEDULE_FULLBODY = {
 
 const WEEK_SCHEDULE = {
   0: {day:'Sonntag', type:'active', label:'Aktiv & Familie', tag:'tag-yel', icon:'👨‍👩‍👧'},
-  1: {day:'Montag', type:'football', label:'Fußball', tag:'tag-teal', icon:'⚽', gym:'A', gymLabel:'Gym A (morgens)'},
-  2: {day:'Dienstag', type:'rest', label:'Erholung / Spaziergang', tag:'tag-grey', icon:'🚶'},
+  1: {day:'Montag', type:'football', label:'Fußball', tag:'tag-teal', icon:'⚽'},
+  2: {day:'Dienstag', type:'gym', label:'Gym A', tag:'tag-or', icon:'💪', gym:'A'},
   3: {day:'Mittwoch', type:'football', label:'Fußball', tag:'tag-teal', icon:'⚽'},
-  4: {day:'Donnerstag', type:'gym', label:'Gym B oder C', tag:'tag-or', icon:'💪', gym:'B'},
-  5: {day:'Freitag', type:'gym', label:'Gym B', tag:'tag-or', icon:'💪', gym:'B'},
+  4: {day:'Donnerstag', type:'gym', label:'Gym B', tag:'tag-or', icon:'💪', gym:'B'},
+  5: {day:'Freitag', type:'gym', label:'Gym C', tag:'tag-or', icon:'💪', gym:'C'},
   6: {day:'Samstag', type:'active', label:'Aktiv / Spaziergang', tag:'tag-yel', icon:'🌤️'},
 };
 
@@ -1546,7 +1546,7 @@ function renderToday() {
 
   const tagDiv = document.getElementById('todayTags');
   tagDiv.innerHTML = `<span class="tag ${sched.tag}">${sched.icon} ${sched.label}</span>`;
-  if(sched.gym) tagDiv.innerHTML += `<span class="tag tag-or">💪 ${sched.gymLabel||'Gym '+sched.gym}</span>`;
+  if(sched.gym && sched.type !== 'gym') tagDiv.innerHTML += `<span class="tag tag-or">💪 ${sched.gymLabel||'Gym '+sched.gym}</span>`;
 
   renderStreak();
 
